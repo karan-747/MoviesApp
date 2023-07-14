@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.moviesapp.R
+import com.example.moviesapp.data.MovieItem
 import com.example.moviesapp.databinding.FragmentMoviesBinding
 import com.example.moviesapp.di.Injector
 import com.example.moviesapp.presentation.MoviesVMFactory
@@ -48,15 +49,23 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
 
     private fun refreshMoviesList() {
         binding.progressBar.visibility = View.VISIBLE
+        lateinit var newMoviesList: List<MovieItem>
         viewModel.updateMovies().observe(viewLifecycleOwner, Observer {
             if (it != null) {
-                myAdapter.updateMovieslist(it)
+                newMoviesList= it
+                //myAdapter.updateMovieslist(it)
                 binding.progressBar.visibility = View.GONE
             }else{
                 binding.progressBar.visibility = View.GONE
+                newMoviesList= listOf()
                 Toast.makeText(requireContext(),"No Data Available",Toast.LENGTH_SHORT).show()
             }
+            if(newMoviesList.isNotEmpty()){
+                myAdapter.updateMovieslist(newMoviesList)
+            }
         })
+
+
     }
 
     private fun initRecyclerView() {
