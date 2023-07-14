@@ -1,4 +1,4 @@
-package com.example.moviesapp.datasourceImpl
+package com.example.moviesapp.data.datasourceImpl
 
 import com.example.moviesapp.data.MovieItem
 import com.example.moviesapp.data.MoviesList
@@ -10,10 +10,11 @@ class MoviesCacheDataSourceImpl:MoviesCacheDataSource  {
         return movieList
     }
 
-    override suspend fun saveMoviesToCache(moviesList: MoviesList) {
+    override suspend fun saveMoviesToCache(moviesList: List<MovieItem>) {
         this.movieList.clear()
         this.movieList.addAll(movieList)
     }
+
 
 
 

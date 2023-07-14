@@ -1,4 +1,4 @@
-package com.example.moviesapp.datasourceImpl
+package com.example.moviesapp.data.datasourceImpl
 
 import com.example.moviesapp.data.MovieItem
 import com.example.moviesapp.data.datasource.MoviesLocalDataSource

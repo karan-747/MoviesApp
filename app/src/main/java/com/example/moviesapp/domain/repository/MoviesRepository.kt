@@ -1,16 +1,16 @@
 package com.example.moviesapp.domain.repository
 
+import android.util.Log
 import com.example.moviesapp.data.MovieItem
-import com.example.moviesapp.data.MoviesList
 import com.example.moviesapp.data.datasource.MoviesCacheDataSource
+import com.example.moviesapp.data.datasource.MoviesLocalDataSource
 import com.example.moviesapp.data.datasource.MoviesRemoteDataSource
-import com.example.moviesapp.datasourceImpl.MoviesLocalDataSourceImpl
 import java.lang.Exception
 
 class MoviesRepository(
     private val moviesCacheDataSource: MoviesCacheDataSource,
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
-    private val moviesLocalDataSourceImpl: MoviesLocalDataSourceImpl
+    private val moviesLocalDataSource: MoviesLocalDataSource
 ):MovieRepository {
     override suspend fun getMovies(): List<MovieItem>? {
         return getMoviesFromCache()
@@ -20,8 +20,8 @@ class MoviesRepository(
 
     override suspend fun updateMovies(): List<MovieItem>? {
         val newMoviesList = getMoviesFromApi()
-        moviesLocalDataSourceImpl.clearAll()
-        moviesLocalDataSourceImpl.saveMovies(newMoviesList)
+        moviesLocalDataSource.clearAll()
+        moviesLocalDataSource.saveMovies(newMoviesList)
         moviesCacheDataSource.saveMoviesToCache(newMoviesList)
         return newMoviesList
 
@@ -35,23 +35,29 @@ class MoviesRepository(
             if(body != null){
                 moviesList = body.movies
             }
+            else{
+                moviesList = listOf()
+            }
+            Log.d("TAGY",response.message())
         }
         catch (e:Exception){
-
+            moviesList = listOf()
+            Log.d("TAGY", e.message.toString())
         }
         return moviesList
     }
     private suspend fun getMoviesFromRoom():List<MovieItem>{
         lateinit var moviesList: List<MovieItem>
         try {
-            moviesList = moviesLocalDataSourceImpl.getMoviesFromDB()
+            moviesList = moviesLocalDataSource.getMoviesFromDB()
         }
         catch (e:Exception){
-
+            moviesList = listOf()
         }
         return if(moviesList.isEmpty()){
-            moviesLocalDataSourceImpl.clearAll()
-            moviesLocalDataSourceImpl.saveMovies(moviesList)
+            moviesList = getMoviesFromApi()
+            moviesLocalDataSource.clearAll()
+            moviesLocalDataSource.saveMovies(moviesList)
             moviesList
         }else{
             moviesList
@@ -64,7 +70,7 @@ class MoviesRepository(
             moviesList = moviesCacheDataSource.getMoviesFromCache()
         }
         catch (e:Exception){
-
+            moviesList = listOf()
         }
         return if(moviesList.isNotEmpty()){
             moviesList

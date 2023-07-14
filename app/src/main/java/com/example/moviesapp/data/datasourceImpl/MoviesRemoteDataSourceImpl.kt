@@ -1,4 +1,4 @@
-package com.example.moviesapp.datasourceImpl
+package com.example.moviesapp.data.datasourceImpl
 
 import com.example.moviesapp.data.MoviesList
 import com.example.moviesapp.data.api.TMDBInterface
